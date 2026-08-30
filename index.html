@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="referrer" content="no-referrer">
+    <meta name="theme-color" content="#060608">
+    <title>AuraFlix | Premium Streaming</title>
+    <meta name="description" content="AuraFlix - A premium cinematic streaming experience for movies and TV shows.">
+    <link rel="preconnect" href="https://api.themoviedb.org">
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/index.min.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="aura_flix_favicon_1776879785534.png">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AuraFlix — Premium Streaming Redefined">
+    <meta property="og:description" content="Cinematic streaming at its peak. Ad-free, high-performance, and ultra-premium.">
+    <meta property="og:image" content="aura_flix_favicon_1776879785534.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <style>
+        /* Slider arrow: visible on desktop hover, hidden by default.
+           Note: pointer-events:none was removed here so arrows still
+           respond on initial render — JS controls pointer-events
+           based on scroll position to avoid dead zones. */
+        .slider-btn {
+            opacity: 0;
+            transition: opacity 0.3s ease, background 0.2s ease, transform 0.2s ease;
+        }
+        .slider-wrapper:hover .slider-btn {
+            opacity: 1;
+        }
+        /* On touch devices: completely remove arrow buttons —
+           swipe is the only gesture. Display:none prevents them
+           from intercepting any touch events. */
+        @media (hover: none) {
+            .slider-btn { display: none !important; }
+        }
+        /* Modal meta spacing */
+        .modal-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .modal-meta span + span::before {
+            content: '·';
+            margin: 0 8px;
+            opacity: 0.4;
+        }
+        /* Anti-flash: hide rows until JS marks them visible */
+        .row { will-change: opacity, transform; }
+    </style>
+</head>
+<body class="loading-active">
+
+    <!-- Premium Loader -->
+    <div class="master-loader" id="masterLoader">
+        <div class="loader-content">
+            <div class="loader-logo">Aura<span>Flix</span></div>
+        </div>
+    </div>
+
+    <!-- Cinematic Grain & Global Particles -->
+    <div class="film-grain" aria-hidden="true"></div>
+    <div class="particles-global" id="globalParticles" aria-hidden="true"></div>
+
+    <!-- NAVBAR -->
+    <header class="navbar" id="navbar">
+        <div class="nav-left">
+            <a href="#" class="logo">Aura<span>Flix</span></a>
+            <nav class="nav-links">
+                <!-- data-section drives JS section switching -->
+                <a href="#" data-section="home"     class="active">Home</a>
+                <a href="#" data-section="movies">Movies</a>
+                <a href="#" data-section="tv">TV Shows</a>
+                <a href="#" data-section="trending">Trending</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <div class="search-box">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search movies, shows..." autocomplete="off">
+            </div>
+            <button class="btn-icon shield-btn sound-hover sound-click" id="adguardBtn" title="Ad-Free Network Setup">
+                <i class="ph-fill ph-shield-check"></i>
+            </button>
+            <div class="user-profile hr-logo-container sound-hover sound-click" id="hrLogoBtn" title="Hamza Rana">
+                <span class="hr-logo-text">HR</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Overlay — hidden until search is active -->
+    <div class="search-overlay" id="searchOverlay" style="display:none;">
+        <div class="search-results-container">
+            <h3>Search Results</h3>
+            <div class="grid-container" id="searchResultsGrid"></div>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero-section" id="heroSection">
+            <div class="hero-backdrop"></div>
+            <div class="hero-vignette"></div>
+            <div class="hero-ambient-glow"></div>
+            <div class="hero-content">
+                <div class="hero-badges">
+                    <span class="badge premium-badge"><i class="ph ph-crown"></i> Exclusive</span>
+                    <span class="badge hd-badge">4K ULTRA HD</span>
+                </div>
+                <h1 class="hero-title skeleton-text" id="heroTitle"></h1>
+                <div class="hero-meta skeleton-text" id="heroMeta"></div>
+                <p class="hero-overview skeleton-text" id="heroOverview"></p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary glow-btn sound-hover sound-click" id="heroPlayBtn">
+                        <i class="ph-fill ph-play-circle"></i> Watch Now
+                    </button>
+                    <button class="btn btn-secondary sound-hover sound-click" id="heroInfoBtn">
+                        <i class="ph ph-info"></i> More Info
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="rows-container" id="rowsContainer"></section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">Aura<span>Flix</span></a>
+                <p class="footer-tagline">Premium cinematic streaming, redefined.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Help</a>
+                <a href="#">Contact</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 AuraFlix &nbsp;&bull;&nbsp; Crafted by <span class="footer-hr">HR</span></p>
+        </div>
+    </footer>
+
+    <!-- DETAILS MODAL -->
+    <div class="modal-backdrop" id="detailsModal">
+        <div class="modal-content">
+            <button class="close-modal sound-hover sound-click" id="closeModal"><i class="ph ph-x"></i></button>
+            <div class="modal-hero">
+                <div class="modal-hero-bg"></div>
+                <div class="modal-hero-vignette"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-header">
+                    <h2 id="modalTitle"></h2>
+                    <!-- Meta: rating · year · runtime/seasons -->
+                    <div class="modal-meta" id="modalMeta"></div>
+                </div>
+
+                <!-- TV season/episode pickers (hidden for movies) -->
+                <div id="tvSelectors" style="display:none; gap:15px; margin-top:15px; margin-bottom:5px;">
+                    <select id="seasonSelect"  class="premium-select sound-hover sound-click"></select>
+                    <select id="episodeSelect" class="premium-select sound-hover sound-click"></select>
+                </div>
+
+                <div class="modal-actions" style="margin-top:20px; display:flex; flex-wrap:wrap; gap:15px; align-items:center;">
+                    <button class="btn btn-primary glow-btn sound-hover sound-click" id="modalPlayBtn">
+                        <i class="ph-fill ph-play"></i> Watch Now
+                    </button>
+                    <!-- Server selector -->
+                    <select id="serverSelect" class="premium-select sound-hover sound-click" style="width:auto; padding:0 30px 0 15px;">
+                        <option value="vidlink">⚡ Server 1 (Lightning)</option>
+                        <option value="vidsrc">🔄 Server 2 (Backup)</option>
+                        <option value="super">🎯 Server 3 (Max Focus)</option>
+                        <option value="trailer">🎬 Official Trailer</option>
+                    </select>
+                    <!-- Language selector — populated dynamically by JS -->
+                    <select id="langSelect" class="premium-select sound-hover sound-click" style="width:auto; padding:0 30px 0 15px;">
+                        <option value="">Loading…</option>
+                    </select>
+                    <button class="btn btn-icon sound-hover sound-click" title="Add to list"><i class="ph ph-plus"></i></button>
+                    <button class="btn btn-icon sound-hover sound-click" title="Like"><i class="ph ph-thumbs-up"></i></button>
+                </div>
+
+                <div class="modal-info-grid" style="margin-top:30px;">
+                    <div class="modal-left">
+                        <p id="modalOverview" class="modal-desc"></p>
+                        <div class="recommended-section" id="recommendedSection" style="display:none;">
+                            <h4 class="section-title">Recommended For You</h4>
+                            <div id="recommendedContainer"></div>
+                        </div>
+                    </div>
+                    <div class="modal-right">
+                        <p><strong>Cast:</strong> <span id="modalCast" class="skeleton-text"></span></p>
+                        <p><strong>Genres:</strong> <span id="modalGenres" class="skeleton-text"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO MODAL -->
+    <div class="video-modal-backdrop" id="videoModal">
+        <div class="video-container">
+            <button class="close-video sound-hover" id="closeVideo"><i class="ph ph-x"></i></button>
+            <iframe id="youtubePlayer" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen referrerpolicy="no-referrer"></iframe>
+        </div>
+    </div>
+
+    <!-- ADGUARD MODAL -->
+    <div class="modal-backdrop" id="adguardModalOverlay">
+        <div class="modal-content adguard-modal">
+            <button class="close-modal sound-hover sound-click" id="closeAdguardModal"><i class="ph ph-x"></i></button>
+            <div class="adguard-header">
+                <i class="ph-fill ph-shield-check"></i>
+                <h2>Secure Ad-Free Network</h2>
+                <p>Follow these steps to eliminate all popups via Private DNS.</p>
+            </div>
+            <div class="device-tabs">
+                <button class="device-tab active sound-hover sound-click" onclick="switchAdguardTab('android', event)"><i class="ph-fill ph-android-logo"></i> Android</button>
+                <button class="device-tab sound-hover sound-click" onclick="switchAdguardTab('ios', event)"><i class="ph-fill ph-apple-logo"></i> iOS</button>
+                <button class="device-tab sound-hover sound-click" onclick="switchAdguardTab('pc', event)"><i class="ph-fill ph-windows-logo"></i> Windows/Mac</button>
+            </div>
+            <div class="adguard-body">
+                <div id="tab-android" class="adguard-tab-content active">
+                    <div class="step-card">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><h3>Android Settings</h3><p>Open <strong>Settings</strong> &gt; <strong>Network &amp; Internet</strong> &gt; <strong>Private DNS</strong></p></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><h3>Deploy AdGuard</h3><p>Select <strong>Private DNS provider hostname</strong> and paste:</p><p><code class="dns-code">dns.adguard.com</code></p><p>Save &amp; restart. Zero popups forever.</p></div>
+                    </div>
+                </div>
+                <div id="tab-ios" class="adguard-tab-content" style="display:none;">
+                    <div class="step-card">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><h3>iPhone / iPad Settings</h3><p>Open <strong>Settings</strong> &gt; <strong>Wi-Fi</strong> &gt; Tap the <strong>'i'</strong> next to your network.</p></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><h3>Deploy AdGuard</h3><p>Tap <strong>Configure DNS</strong> &gt; <strong>Manual</strong> &gt; Add Server: <code class="dns-code">94.140.14.14</code></p><p>Save &amp; restart Safari.</p></div>
+                    </div>
+                </div>
+                <div id="tab-pc" class="adguard-tab-content" style="display:none;">
+                    <div class="step-card">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><h3>Windows / Mac</h3><p>Windows: Settings &gt; Network &gt; Wi-Fi &gt; DNS Edit. &nbsp; Mac: System Settings &gt; Network &gt; DNS.</p></div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><h3>Deploy AdGuard</h3><p>Primary: <code class="dns-code">94.140.14.14</code> &nbsp;|&nbsp; Secondary: <code class="dns-code">94.140.15.15</code></p><p>Save &amp; restart browser.</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="adguard-footer">
+                <button class="btn btn-primary sound-hover sound-click" id="adguardDoneBtn">Network Secured <i class="ph ph-check"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HR SOVEREIGN MODAL -->
+    <div class="hr-modal-backdrop" id="hrModal">
+        <div class="hr-modal-inner">
+            <button class="hr-modal-close sound-hover" id="hrModalClose"><i class="ph ph-x"></i></button>
+            <div class="hr-bg"></div>
+            <div class="hr-particles" id="hrParticles"></div>
+            <div class="hr-rings">
+                <div class="hr-ring hr-ring-1"></div>
+                <div class="hr-ring hr-ring-2"></div>
+                <div class="hr-ring hr-ring-3"></div>
+            </div>
+            <div class="hr-stage">
+                <div class="hr-crest">
+                    <svg class="hr-hex-svg" viewBox="0 0 218 218" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="hg-hr" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%"   stop-color="#fff3c4"/>
+                                <stop offset="50%"  stop-color="#fbbf24"/>
+                                <stop offset="100%" stop-color="#92400e"/>
+                            </linearGradient>
+                            <linearGradient id="hfill-hr" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%"   stop-color="#fbbf24" stop-opacity="0.10"/>
+                                <stop offset="100%" stop-color="#000000" stop-opacity="0.00"/>
+                            </linearGradient>
+                        </defs>
+                        <polygon points="109,11 200,60 200,158 109,207 18,158 18,60" stroke="url(#hg-hr)" stroke-width="1.3" fill="url(#hfill-hr)"/>
+                        <polygon points="109,31 180,73 180,147 109,189 38,147 38,73" stroke="rgba(251,191,36,0.2)" stroke-width="0.7" fill="none"/>
+                        <polygon points="109,51 160,80 160,140 109,169 58,140 58,80" stroke="rgba(251,191,36,0.07)" stroke-width="0.5" fill="none"/>
+                        <circle cx="109" cy="11"  r="3.5" fill="#fff3c4" opacity="0.95"/>
+                        <circle cx="200" cy="60"  r="3.5" fill="#fff3c4" opacity="0.75"/>
+                        <circle cx="200" cy="158" r="3.5" fill="#fff3c4" opacity="0.75"/>
+                        <circle cx="109" cy="207" r="3.5" fill="#fff3c4" opacity="0.95"/>
+                        <circle cx="18"  cy="158" r="3.5" fill="#fff3c4" opacity="0.75"/>
+                        <circle cx="18"  cy="60"  r="3.5" fill="#fff3c4" opacity="0.75"/>
+                        <line x1="109" y1="11"  x2="109" y2="31"  stroke="rgba(251,191,36,0.5)" stroke-width="0.7"/>
+                        <line x1="109" y1="189" x2="109" y2="207" stroke="rgba(251,191,36,0.5)" stroke-width="0.7"/>
+                    </svg>
+                    <div class="hr-letters">HR</div>
+                </div>
+                <div class="hr-divider">
+                    <div class="hr-div-line"></div>
+                    <div class="hr-div-gem"></div>
+                    <div class="hr-div-line hr-div-line-r"></div>
+                </div>
+                <div class="hr-name">Hamza &nbsp; Rana</div>
+                <div class="hr-subtitle">Personal Brand &nbsp;·&nbsp; Est. Excellence</div>
+            </div>
+            <div class="hr-corner hr-tl"></div>
+            <div class="hr-corner hr-tr"></div>
+            <div class="hr-corner hr-bl"></div>
+            <div class="hr-corner hr-br"></div>
+            <div class="hr-label">Golden Excellence</div>
+        </div>
+    </div>
+
+    <script>
+        function switchAdguardTab(tabId, e) {
+            document.querySelectorAll('.device-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.adguard-tab-content').forEach(c => c.style.display = 'none');
+            e.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            if (window.playAudio) window.playAudio('soundClick');
+        }
+
+        function createParticles(containerId, count, className) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = className;
+                const size = Math.random() * 3 + 1;
+                p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;`
+                    + `animation-duration:${Math.random()*10+10}s;animation-delay:${Math.random()*5}s`;
+                container.appendChild(p);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles('globalParticles', 12, 'p-global');
+            createParticles('hrParticles', 8, 'p-global');
+        });
+    </script>
+
+    <!-- Sounds handled via Web Audio API in app.js — no network requests needed -->
+
+    <script src="app.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

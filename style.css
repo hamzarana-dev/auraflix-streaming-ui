@@ -1,0 +1,2373 @@
+/* ============================================
+   AURA FLIX — ULTRA PREMIUM CINEMATIC THEME
+   Elite L99 Design System
+   ============================================ */
+
+:root {
+    /* Luxury Dark Colors */
+    --bg-base: #060608;
+    --bg-surface: #0c0c10;
+    --bg-elevated: #161620;
+    
+    /* Aura Accents (Luxurious Gold / Royal Amber) */
+    --aura-primary: #fbbf24;
+    --aura-secondary: #fef3c7;
+    --aura-deep: #92400e;
+    --aura-glow: rgba(251, 191, 36, 0.45);
+    --aura-gradient: linear-gradient(135deg, #fff3c4, #fbbf24, #92400e);
+    
+    /* Text Colors */
+    --text-pure: #ffffff;
+    --text-primary: #eeeef3;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    
+    /* UI Elements */
+    --glass-bg: rgba(12, 12, 16, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --glass-highlight: rgba(255, 255, 255, 0.12);
+    --transition-fast: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-smooth: 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-cinematic: 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    
+    /* Layout */
+    --px-pad: 4% 8%;
+    --border-radius-sm: 8px;
+    --border-radius-md: 14px;
+    --border-radius-lg: 24px;
+    --shadow-premium: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+body.loading-active {
+    overflow: hidden;
+}
+
+/* Scroll lock: JS sets position:fixed + top dynamically.
+   CSS only adds overflow:hidden as a fallback signal. */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* === MASTER LOADER — ELITE CINEMATIC BOOT === */
+.master-loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.master-loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+.loader-logo {
+    font-size: 52px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    margin-bottom: 25px;
+    animation: loaderPulse 2s ease-in-out infinite;
+}
+
+.loader-logo span {
+    background: var(--aura-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+
+@keyframes loaderPulse {
+    0%, 100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+    50% { transform: scale(1.05); opacity: 0.8; filter: brightness(1.2); }
+}
+
+/* === CINEMATIC FILM GRAIN & GRID === */
+.film-grain {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1; /* Absolute background */
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* mix-blend-mode removed for performance */
+}
+
+/* Adaptive: Disable grain on Lite devices */
+[data-tier="LITE"] .film-grain {
+    display: none !important;
+}
+
+body.playing-video .film-grain,
+body.playing-video .particles-global {
+    opacity: 0 !important;
+    display: none;
+}
+
+/* === ULTRA-SMOOTH AMBIENT GLOW (Replaces heavy particles) === */
+.particles-global {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2; /* Just above grain */
+    background: radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 70%);
+    animation: ambientAura 15s ease-in-out infinite alternate;
+    animation-play-state: paused; /* Resumed by IntersectionObserver in JS */
+}
+
+@keyframes ambientAura {
+    0% { transform: translate(-5%, -5%) scale(1); }
+    100% { transform: translate(5%, 5%) scale(1.1); }
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar {
+    width: 8px;
+    background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #2a2a38, #1a1a25);
+    border-radius: 10px;
+    border: 2px solid var(--bg-base);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--aura-primary);
+}
+
+/* === NAVBAR === */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 18px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2000; /* Priority interaction */
+    transition: var(--transition-smooth);
+    background: linear-gradient(to bottom, rgba(6,6,8,0.95) 0%, rgba(6,6,8,0) 100%);
+    pointer-events: auto;
+}
+
+.navbar.scrolled {
+    padding: 12px 8%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.6), inset 0 1px 0 var(--glass-highlight);
+}
+
+/* Adaptive: Reduce blur on Lite devices */
+[data-tier="LITE"] .navbar.scrolled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: #060608;
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-pure);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    transition: var(--transition-fast);
+}
+.logo:hover { opacity: 0.85; }
+
+.logo span {
+    background: var(--aura-gradient);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: goldenFlow 5s ease-in-out infinite;
+    filter: drop-shadow(0 4px 10px var(--aura-glow));
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--aura-gradient);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--text-pure);
+}
+
+.nav-links a:hover::after, .nav-links a.active::after {
+    width: 100%;
+}
+
+/* === SEARCH === */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--glass-border);
+    padding: 8px 16px;
+    border-radius: 50px;
+    transition: var(--transition-smooth);
+}
+
+.search-box:focus-within {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--aura-primary);
+    box-shadow: 0 0 20px var(--aura-glow), inset 0 0 0 1px rgba(124, 58, 237, 0.2);
+    width: 280px;
+}
+
+.search-box i {
+    color: var(--text-secondary);
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: var(--text-pure);
+    font-size: 14px;
+    outline: none;
+    width: 150px;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+}
+
+/* === HR LOGO (Gold Premium) === */
+.hr-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(20,20,25,0.6);
+    border: 2px solid #d4a853;
+    box-shadow: 0 5px 15px rgba(212, 168, 83, 0.4);
+    /* animation removed — plays on click only via .hr-logo-anim class */
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    z-index: 1001;
+}
+.hr-logo-container:hover {
+    box-shadow: 0 8px 25px rgba(212, 168, 83, 0.7);
+    transform: translateY(-2px) scale(1.05);
+}
+/* Click-triggered animation: added/removed by JS */
+.hr-logo-container.hr-logo-anim {
+    animation: floatingLogo 4s ease-in-out 1;
+}
+.hr-logo-text {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #d4a853, #f0d68a, #c49b3b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@keyframes floatingLogo {
+    0% { transform: translateY(0) scale(1); box-shadow: 0 5px 15px rgba(212, 168, 83, 0.4); }
+    50% { transform: translateY(-4px) scale(1.06); box-shadow: 0 10px 25px rgba(212, 168, 83, 0.7); }
+    100% { transform: translateY(0) scale(1); box-shadow: 0 5px 15px rgba(212, 168, 83, 0.4); }
+}
+
+/* === HERO SECTION === */
+.hero-section {
+    position: relative;
+    height: 92vh;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--px-pad);
+    padding-bottom: 120px;
+    overflow: hidden;
+}
+
+.hero-backdrop {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover;
+    background-position: top center;
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
+    will-change: transform, opacity;
+    transform: translateZ(0); /* Prevent lag on high-res swap */
+}
+
+.hero-backdrop.loaded {
+    animation: heroReveal 1.2s ease-out;
+}
+
+@keyframes heroReveal {
+    0% { opacity: 0; transform: scale(1.04); filter: blur(4px); }
+    60% { opacity: 0.8; filter: blur(1px); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+.hero-vignette {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+        linear-gradient(to top, var(--bg-base) 0%, rgba(6,6,8,0.5) 35%, rgba(6,6,8,0.15) 100%),
+        linear-gradient(to right, var(--bg-base) 0%, rgba(6,6,8,0) 55%);
+    z-index: 2;
+}
+
+.hero-ambient-glow {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 65%; height: 45%;
+    background: radial-gradient(ellipse at bottom left, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+    animation: ambientPulse 8s ease-in-out infinite alternate;
+    animation-play-state: paused; /* Resumed by IntersectionObserver in JS */
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 650px;
+    will-change: transform;
+    animation: contentSlide 0.8s ease-out;
+}
+
+@keyframes contentSlide {
+    0% { opacity: 0; transform: translateY(40px); }
+    40% { opacity: 0.6; }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ambientPulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.08); }
+}
+
+.hero-badges {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+}
+
+.premium-badge {
+    background: linear-gradient(135deg, var(--aura-primary), #6366f1);
+    color: white;
+    box-shadow: 0 4px 15px var(--aura-glow);
+}
+
+.hd-badge {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--glass-border);
+    color: white;
+}
+
+.hero-title {
+    font-size: clamp(36px, 5vw, 68px);
+    font-weight: 800;
+    line-height: 1.08;
+    margin-bottom: 15px;
+    color: var(--text-pure);
+    text-shadow: 0 5px 30px rgba(0,0,0,0.5);
+    letter-spacing: -1.5px;
+}
+
+.hero-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 25px;
+}
+
+.rating-stars {
+    color: #fbbf24;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hero-overview {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 35px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 18px;
+}
+
+/* === BUTTONS === */
+.btn {
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.6s ease-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn:active::after {
+    width: 300px; height: 300px;
+    opacity: 1;
+    transition: 0s;
+}
+
+.btn:active {
+    transform: scale(0.96) translateY(0) !important;
+}
+
+.btn-primary {
+    background: var(--text-pure);
+    color: #000;
+    box-shadow: 0 8px 25px rgba(255,255,255,0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) scale(1.01);
+    background: #f0f0f0;
+    box-shadow: 0 12px 40px rgba(255,255,255,0.18);
+}
+
+.glow-btn {
+    box-shadow: 0 8px 25px rgba(255,255,255,0.1), 0 0 0 0 rgba(255,255,255,0);
+    animation: btnGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes btnGlow {
+    from { box-shadow: 0 8px 25px rgba(255,255,255,0.1), 0 0 15px rgba(255,255,255,0.05); }
+    to { box-shadow: 0 8px 25px rgba(255,255,255,0.15), 0 0 25px rgba(255,255,255,0.1); }
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-pure);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-2px);
+    border-color: var(--glass-highlight);
+}
+
+/* === SKELETON LOADING === */
+.skeleton-text {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+    background-size: 400% 100%;
+    animation: skeletonLoading 1.8s ease-in-out infinite;
+    border-radius: 6px;
+    color: transparent !important;
+}
+
+@keyframes skeletonLoading {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+/* === ROW COMPONENTS === */
+.rows-container {
+    padding-bottom: 60px;
+    margin-top: -80px;
+    position: relative;
+    z-index: 10;
+}
+
+.row {
+    margin-bottom: 45px;
+    padding-left: 8%;
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    /* CRITICAL FIX: removed `contain: content` — it was creating an
+       independent paint/layout container that on Chrome Android stops
+       horizontal scroll events from being delivered to the inner slider.
+       Removed `content-visibility:auto` here too (now in desktop-only block). */
+    z-index: 10;
+    position: relative;
+    pointer-events: auto;
+}
+
+.row.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.row-header {
+    font-size: 22px;
+    color: var(--text-pure);
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+    position: relative;
+    display: inline-block;
+}
+
+.row-header::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--aura-gradient);
+    border-radius: 3px;
+}
+
+.slider-wrapper {
+    position: relative;
+}
+
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--glass-border);
+    color: white;
+    border-radius: 50%;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    transition: var(--transition-fast);
+    opacity: 0;
+}
+
+.slider-wrapper:hover .slider-btn {
+    opacity: 1;
+}
+
+/* On touch devices, FULLY HIDE arrow buttons — they capture touch
+   events even when invisible (opacity:0 still receives pointer events)
+   which can cause phantom clicks during a swipe. Native swipe is the
+   only gesture used on mobile. */
+@media (hover: none) {
+    .slider-btn {
+        display: none !important;
+        pointer-events: none !important;
+    }
+}
+
+.slider-btn:hover {
+    background: var(--aura-primary);
+    transform: translateY(-50%) scale(1.12);
+    box-shadow: 0 0 20px var(--aura-glow);
+}
+
+.slider-btn.left { left: 1%; }
+.slider-btn.right { right: 1%; }
+
+.slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.slider {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 14px;
+    padding-right: 8%;
+    padding-bottom: 20px;
+    /* CRITICAL FIX: scroll-behavior:smooth interferes with native momentum
+       on mobile. JS uses scrollBy({behavior:'smooth'}) for arrow buttons,
+       which still works. But the CSS property itself causes janky touch
+       scrolling on Android Chrome and iOS Safari. */
+    scroll-behavior: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* CRITICAL FIX: pan-x WAS the bug. It tells the browser to ONLY allow
+       horizontal pans, which means a slightly-angled swipe (which is 99%
+       of real-world mobile swipes) gets REJECTED by the browser and the
+       slider freezes. The correct value is `pan-x pan-y` which allows
+       both axes — the dominant direction wins, which is what users expect. */
+    touch-action: pan-x pan-y;
+    /* Prevent rubber-band on the slider only (not the page). Using `auto`
+       (browser default) lets vertical swipes bubble up freely. */
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    /* prevent text selection during swipe */
+    -webkit-user-select: none;
+    user-select: none;
+    /* iOS momentum scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Promote slider (NOT children) to its own layer for buttery scroll */
+    transform: translateZ(0);
+    /* Snap removed from slider — was causing fast-swipe "stuck" on iOS */
+    scroll-snap-type: none;
+}
+
+.slider::-webkit-scrollbar {
+    display: none;
+}
+
+/* === MOVIE CARDS === */
+.movie-card {
+    min-width: 195px;
+    max-width: 195px;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    background: var(--bg-elevated);
+    /* CRITICAL FIX: scroll-snap REMOVED. Snap on mobile + momentum scroll
+       creates a "stuck" sensation where the swipe ends abruptly mid-flick.
+       Slider feels much more fluid without it. */
+    /* CRITICAL FIX: touch-action set to `manipulation` — this disables
+       the 300ms tap delay AND lets the parent .slider's touch-action
+       (pan-x pan-y) handle all panning. Earlier `pan-y` was actively
+       fighting the parent's `pan-x`, causing both to fail. */
+    touch-action: manipulation;
+    /* REMOVED all transform/will-change/backface-visibility on the card.
+       Those create permanent GPU layers that trap touch events on iOS
+       and survive past modal close, causing the "frozen slider" bug. */
+}
+@media (hover: hover) {
+    .movie-card:hover {
+        will-change: transform;
+    }
+}
+
+.high-res-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    /* iOS FIX: pointer-events:none lets touches pass through the IMG
+       to the parent .movie-card / .slider, which fixes "sticky" swipes. */
+    pointer-events: none;
+}
+
+.movie-card:hover {
+    transform: scale(1.05) translateY(-6px);
+    z-index: 20;
+    box-shadow: 
+        0 18px 45px rgba(0,0,0,0.75),
+        0 0 25px rgba(124, 58, 237, 0.2),
+        inset 0 0 0 1px rgba(124, 58, 237, 0.15);
+}
+
+.movie-card img {
+    width: 100%;
+    height: 295px;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+    display: block;
+}
+
+.movie-card:hover img {
+    transform: scale(1.03);
+    filter: brightness(1.06);
+}
+
+/* Card shine effect on hover */
+.movie-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+    transition: left 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 5;
+    pointer-events: none;
+}
+.movie-card:hover::before {
+    left: 150%;
+}
+
+.movie-card:active {
+    transform: scale(0.95) translateY(0);
+    transition: transform 0.1s;
+}
+
+.card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    padding: 25px 14px 14px;
+    background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition-smooth);
+    transform: translateY(8px);
+    z-index: 6;
+}
+
+.movie-card:hover .card-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-overlay h4 {
+    font-size: 14px;
+    color: white;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+.card-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Aura Originals Row (larger landscape cards) */
+.row.original .movie-card {
+    min-width: 310px;
+    max-width: 310px;
+}
+.row.original .movie-card img {
+    height: 175px;
+}
+
+/* === MODAL DESIGN === */
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Adaptive: Disable heavy blur on Lite devices */
+[data-tier="LITE"] .modal-backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0,0,0,0.92);
+}
+
+.modal-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: var(--bg-surface);
+    width: 90%;
+    max-width: 850px;
+    max-height: 90vh;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--glass-border);
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.94) translateY(25px);
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    will-change: transform, opacity;
+    box-shadow: 
+        0 30px 80px rgba(0,0,0,0.7),
+        0 0 0 1px var(--glass-highlight),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.modal-backdrop.active .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.close-modal {
+    position: absolute;
+    top: 18px; right: 18px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--glass-border);
+    color: white;
+    font-size: 20px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    z-index: 100;
+    /* Bug 3 fix: explicit property list instead of `transition: all`
+       (which var(--transition-fast) expands to). `all` forces the browser
+       to interpolate every animatable property on hover — including
+       expensive ones like backdrop-filter, border-color, and box-shadow —
+       causing visible lag. Specifying just background, color, transform
+       lets the GPU compositor handle hover smoothly. */
+    transition: background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    backdrop-filter: blur(5px);
+}
+
+.close-modal:hover {
+    background: var(--text-pure);
+    color: black;
+    transform: rotate(90deg);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-hero {
+    height: 340px;
+    position: relative;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    overflow: hidden;
+}
+
+.modal-hero-bg {
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: top center;
+    transition: transform 12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal-backdrop.active .modal-hero-bg {
+    transform: scale(1.05);
+}
+
+.modal-hero-vignette {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to top, var(--bg-surface) 0%, transparent 75%);
+}
+
+.modal-body {
+    padding: 0 40px 40px;
+    position: relative;
+    margin-top: -60px;
+    z-index: 10;
+}
+
+.modal-header h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-pure);
+    letter-spacing: -1px;
+}
+
+.modal-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-weight: 500;
+    flex-wrap: wrap;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.btn-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--glass-border);
+    color: white;
+    font-size: 22px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: rgba(255,255,255,0.18);
+    border-color: white;
+    transform: scale(1.08);
+}
+
+.premium-select {
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    color: var(--text-pure);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: var(--transition-fast);
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 32px;
+}
+.premium-select:hover {
+    background-color: rgba(255,255,255,0.12);
+    border-color: var(--aura-primary);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.2);
+}
+.premium-select:focus {
+    border-color: var(--aura-primary);
+    box-shadow: 0 0 15px var(--aura-glow);
+}
+.premium-select option {
+    background: #1a1a25;
+    color: var(--text-pure);
+    padding: 12px;
+}
+
+.modal-info-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+.modal-desc {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-primary);
+}
+
+.modal-right p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+.modal-right strong {
+    color: var(--text-secondary);
+}
+.modal-right span {
+    color: var(--text-primary);
+}
+
+/* === RECOMMENDED SECTION === */
+.recommended-section {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid var(--glass-border);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.section-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.recommendation-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    padding: 15px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    max-width: 450px;
+}
+
+.recommendation-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--aura-primary);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-premium);
+}
+
+.rec-img {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.rec-info h5 {
+    font-size: 16px;
+    color: var(--text-pure);
+    margin-bottom: 4px;
+}
+
+.rec-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* === ANIMATIONS === */
+@keyframes goldenFlow {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* === SEARCH OVERLAY === */
+.search-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(6,6,8,0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1100; /* Above navbar (z:1000) and all modals */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 90px 8% 40px; /* Top padding accounts for navbar height */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.search-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.search-results-container h3 {
+    font-size: 26px;
+    color: var(--text-pure);
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+}
+
+.search-card {
+    min-width: 100%;
+    max-width: 100%;
+}
+
+/* === VIDEO MODAL === */
+.video-modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.video-modal-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.video-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #000;
+}
+
+#youtubePlayer {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border: none;
+}
+
+.close-video {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    font-size: 22px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    z-index: 10000;
+    /* Bug 3 fix: explicit property list instead of `transition: all`.
+       `all` triggers compositor work for every animatable property on
+       every hover frame — backdrop-filter is especially expensive and
+       was the root cause of the laggy hover. */
+    transition: background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.close-video:hover {
+    background: white;
+    color: black;
+    transform: scale(1.08) rotate(90deg);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* === SHIELD BTN === */
+.shield-btn {
+    color: var(--aura-secondary);
+    border-color: rgba(56, 189, 248, 0.3);
+    animation: pulseShield 3s infinite;
+}
+
+@keyframes pulseShield {
+    0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}
+
+/* === ADGUARD MODAL === */
+.adguard-modal {
+    max-width: 600px;
+    padding: 0;
+}
+.adguard-header {
+    text-align: center;
+    padding: 40px 30px 30px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.adguard-header i {
+    font-size: 60px;
+    color: var(--aura-secondary);
+    margin-bottom: 12px;
+    display: inline-block;
+}
+.adguard-header h2 {
+    font-size: 30px;
+    color: var(--text-pure);
+    margin-bottom: 10px;
+}
+.adguard-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.device-tabs {
+    display: flex;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--glass-border);
+}
+.device-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+}
+.device-tab i {
+    margin-right: 6px;
+    font-size: 18px;
+    vertical-align: middle;
+}
+.device-tab:hover {
+    color: var(--text-pure);
+    background: rgba(255,255,255,0.03);
+}
+.device-tab.active {
+    color: var(--aura-secondary);
+    border-bottom-color: var(--aura-secondary);
+    background: rgba(56, 189, 248, 0.04);
+}
+.adguard-body {
+    padding: 25px;
+}
+.adguard-tab-content {
+    animation: fadeIn 0.3s ease-out;
+}
+.step-card {
+    display: flex;
+    gap: 18px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 12px;
+    transition: var(--transition-fast);
+}
+.step-card:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: var(--glass-highlight);
+}
+.step-num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--aura-gradient);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+.step-text h3 {
+    color: var(--text-pure);
+    margin-bottom: 8px;
+    font-size: 17px;
+}
+.step-text p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+.dns-code {
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: var(--aura-secondary);
+    font-family: 'SF Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--glass-border);
+}
+.adguard-footer {
+    padding: 0 25px 35px;
+    text-align: center;
+}
+
+/* === PREMIUM FOOTER === */
+.site-footer {
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid var(--glass-border);
+    background: linear-gradient(to bottom, var(--bg-base), rgba(12,12,16,1));
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 8% 40px;
+    text-align: center;
+}
+
+.footer-content .logo {
+    display: inline-flex;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.footer-tagline {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 25px;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.footer-links a:hover {
+    color: var(--text-pure);
+}
+
+.footer-copy {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* ============================================
+   RESPONSIVE — ALL DEVICE CLASSES
+   ============================================ */
+
+@media (max-width: 1280px) {
+    .hero-title { font-size: 56px; }
+}
+
+@media (max-width: 1024px) {
+    .hero-title { font-size: 48px; }
+    .modal-header h2 { font-size: 34px; }
+    .nav-left { gap: 25px; }
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-right { gap: 15px; }
+    .navbar { padding: 12px 5%; }
+    .search-box:focus-within { width: 180px; }
+    .logo { font-size: 24px; }
+    .hero-section { height: 80vh; padding-bottom: 80px; }
+    .hero-title { font-size: 36px; letter-spacing: -0.5px; }
+    .hero-overview { font-size: 14px; -webkit-line-clamp: 2; line-clamp: 2; margin-bottom: 22px; }
+    .hero-actions { gap: 12px; }
+    .btn { padding: 12px 22px; font-size: 14px; }
+    .row { padding-left: 5%; margin-bottom: 35px; }
+    .row-header { font-size: 18px; margin-bottom: 14px; }
+    .slider { gap: 12px; padding-right: 5%; }
+    .movie-card { min-width: 150px; max-width: 150px; }
+    .movie-card img { height: 225px; }
+    .row.original .movie-card { min-width: 250px; max-width: 250px; }
+    .modal-content { width: 96%; max-height: 95vh; border-radius: 18px; }
+    .modal-body { padding: 0 20px 30px; }
+    .modal-header h2 { font-size: 26px; }
+    .modal-info-grid { grid-template-columns: 1fr; gap: 20px; }
+    .modal-hero { height: 240px; }
+    .premium-select { font-size: 12px; padding: 10px 28px 10px 14px; }
+    .search-box { padding: 6px 12px; }
+    .search-box input { width: 110px; font-size: 13px; }
+    .adguard-modal { max-width: 95%; }
+    .adguard-header { padding: 25px 20px 20px; }
+    .adguard-header i { font-size: 45px; }
+    .adguard-header h2 { font-size: 22px; }
+    .device-tab { font-size: 13px; padding: 12px 0; }
+    .device-tab i { display: none; }
+    .adguard-body { padding: 18px; }
+    .step-card { padding: 15px; gap: 14px; }
+    .grid-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+    .footer-links { gap: 20px; }
+    .close-video { top: 15px; right: 15px; width: 42px; height: 42px; }
+    .recommendation-card { max-width: 100%; }
+    
+    /* Disable expensive effects on mobile for elite speed */
+    .film-grain { display: none !important; }
+    .hero-ambient-glow { animation: none; opacity: 0.4; }
+    .particles-global { display: none; }
+
+    /* MOBILE SLIDER PERFORMANCE: smaller padding for better swipe area */
+    .slider { padding-bottom: 14px; }
+    /* Disable card shine on mobile — pseudo-element animation hurts FPS */
+    .movie-card::before { display: none !important; }
+    /* Make sure cards never get GPU-layer-trapped on mobile */
+    .movie-card { transform: none !important; will-change: auto !important; }
+    .movie-card img { transform: none !important; }
+}
+
+@media (max-width: 480px) {
+    .hero-section { height: 75vh; padding-bottom: 60px; }
+    .hero-title { font-size: 28px; letter-spacing: -0.3px; }
+    .hero-badges .badge { font-size: 9px; padding: 4px 8px; letter-spacing: 0.5px; }
+    .hero-overview { -webkit-line-clamp: 2; line-clamp: 2; font-size: 13px; }
+    .btn { padding: 10px 18px; font-size: 13px; gap: 6px; }
+    .logo { font-size: 22px; }
+    .navbar { padding: 12px 4%; }
+    .nav-right { gap: 8px; }
+    .hr-logo-container { width: 38px; height: 38px; }
+    .hr-logo-text { font-size: 15px; }
+    .movie-card { min-width: 130px; max-width: 130px; border-radius: 10px; }
+    .movie-card img { height: 195px; }
+    .row.original .movie-card { min-width: 220px; max-width: 220px; }
+    .row { padding-left: 4%; }
+    .slider { gap: 10px; padding-right: 4%; }
+    .search-box input { width: 90px; }
+    .shield-btn { width: 38px; height: 38px; font-size: 18px; }
+    .modal-body { padding: 0 16px 25px; }
+    .close-modal { top: 12px; right: 12px; width: 34px; height: 34px; font-size: 16px; }
+}
+
+/* === TOUCH DEVICE OPTIMIZATIONS === */
+@media (hover: none) {
+    .movie-card:hover {
+        transform: none;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+    /* CRITICAL FIX: removed :active scale transform on touch.
+       Active state fires DURING swipe-start, briefly scaling the card,
+       which causes a layout shift that iOS interprets as "user changed
+       intent" and cancels the scroll. Static cards = smooth scroll. */
+    .movie-card:active {
+        transform: none;
+    }
+    .card-overlay {
+        opacity: 1;
+        transform: translateY(0);
+        /* Smaller, less obtrusive overlay on touch */
+        padding: 18px 12px 10px;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    }
+    .movie-card::before { display: none; }
+    /* Disable hover-only image zoom on touch */
+    .high-res-img { transition: none; }
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .film-grain { display: none; }
+}
+
+/* ============================================
+   FOOTER UPGRADES
+   ============================================ */
+.footer-hr {
+    background: linear-gradient(135deg, #d4a853, #f0d68a, #c49b3b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   VERIFIED ANIMATIONS — ALL 10 FEATURES
+   ============================================ */
+
+/* 1. HERO AMBIENT GLOW — violet radial at bottom-left */
+.hero-ambient-glow {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 65%; height: 50%;
+    background: radial-gradient(ellipse at bottom left,
+        rgba(124, 58, 237, 0.12) 0%,
+        rgba(99, 102, 241, 0.06) 40%,
+        transparent 70%);
+    z-index: 2;
+    pointer-events: none;
+    animation: ambientGlow 7s ease-in-out infinite alternate;
+}
+@keyframes ambientGlow {
+    0%   { opacity: 0.7; transform: scale(1) translateX(0); }
+    100% { opacity: 1;   transform: scale(1.12) translateX(2%); }
+}
+
+/* 2. CARD SHINE SWEEP — verified with ::before on .movie-card */
+/* (already in card styles above — ::before does left -100% → 150%) */
+
+/* 3. NAV LINK UNDERLINE — gradient line ::after on .nav-links a */
+/* (already in nav styles above — width 0 → 100%) */
+
+/* 4. ROW HEADER ACCENT BAR */
+/* (already in row-header ::after above — 40px gradient bar) */
+
+/* 5. BUTTON RIPPLE — ::after radial on .btn */
+/* (already in btn styles above — width/height 0 → 300px on :active) */
+
+/* 6. GLOW-PULSE on Watch Now button */
+@keyframes btnGlow {
+    0%   { box-shadow: 0 8px 25px rgba(255,255,255,0.08), 0 0 0 0 rgba(255,255,255,0.05); }
+    50%  { box-shadow: 0 10px 35px rgba(255,255,255,0.16), 0 0 30px rgba(255,255,255,0.08); }
+    100% { box-shadow: 0 8px 25px rgba(255,255,255,0.08), 0 0 0 0 rgba(255,255,255,0.05); }
+}
+.glow-btn {
+    animation: btnGlow 3s ease-in-out infinite;
+}
+
+/* 7. CLOSE BUTTON ROTATE on hover */
+.close-modal {
+    transition: background var(--transition-fast), color var(--transition-fast), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.close-modal:hover { transform: rotate(90deg); }
+
+.close-video {
+    transition: background var(--transition-fast), color var(--transition-fast), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.close-video:hover { transform: scale(1.05) rotate(90deg); }
+
+/* 8. MODAL HERO SLOW ZOOM — Ken Burns pan (12s verrrry slow) */
+.modal-hero-bg {
+    transition: transform 14s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center 30%;
+}
+.modal-backdrop.active .modal-hero-bg {
+    transform: scale(1.08);
+}
+
+/* 9. CUSTOM SELECT ARROWS — already in premium-select with SVG bg-image */
+
+/* 10. PREMIUM FOOTER */
+.site-footer {
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid var(--glass-border);
+    background: linear-gradient(to bottom, var(--bg-base), rgba(8,8,12,1));
+    padding-top: 1px; /* fix top border overlap */
+}
+
+/* ============================================
+   HR — AMETHYST SOVEREIGN MODAL
+   ============================================ */
+.hr-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hr-modal-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hr-modal-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Close button */
+.hr-modal-close {
+    position: absolute;
+    top: 30px; right: 36px;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: rgba(168,85,247,0.12);
+    border: 1px solid rgba(168,85,247,0.3);
+    color: rgba(192,132,252,0.9);
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: background 0.3s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1), color 0.3s;
+}
+.hr-modal-close:hover {
+    background: rgba(168,85,247,0.35);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* Deep void background */
+.hr-bg {
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse 60% 55% at 50% 50%, rgba(251,191,36,0.12) 0%, rgba(146,64,14,0.06) 45%, transparent 75%),
+        radial-gradient(ellipse 28% 22% at 18% 82%, rgba(251,191,36,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 28% 22% at 82% 18%, rgba(251,191,36,0.05) 0%, transparent 60%);
+}
+.hr-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(251,191,36,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(251,191,36,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+}
+.hr-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 35%, rgba(0,0,0,0.9) 100%);
+}
+
+/* Floating dust particles — static, no animation (was causing GPU glitch) */
+.hr-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.hp {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(251,191,36,0.5);
+    /* animation removed */
+}
+.hp:nth-child(1) { width:2px; height:2px; left:10%; top:20%; }
+.hp:nth-child(2) { width:1px; height:1px; left:25%; top:55%; }
+.hp:nth-child(3) { width:3px; height:3px; left:40%; top:35%; }
+.hp:nth-child(4) { width:1px; height:1px; left:55%; top:70%; }
+.hp:nth-child(5) { width:2px; height:2px; left:70%; top:25%; }
+.hp:nth-child(6) { width:1px; height:1px; left:85%; top:60%; }
+.hp:nth-child(7) { width:2px; height:2px; left:15%; top:80%; }
+.hp:nth-child(8) { width:1px; height:1px; left:62%; top:45%; }
+
+/* Orbital rings */
+.hr-rings {
+    position: absolute;
+    width: 420px; height: 420px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%); /* True geometric center */
+    pointer-events: none;
+}
+.hr-ring {
+    position: absolute;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-style: solid;
+}
+.hr-ring-1 {
+    width: 390px; height: 390px;
+    border-width: 0.5px;
+    border-color: rgba(251, 191, 36, 0.25);
+    /* animation removed — was causing GPU glitch */
+}
+.hr-ring-1::before, .hr-ring-1::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #fff3c4;
+    box-shadow: 
+        0 0 10px #fff3c4,
+        0 0 20px #fbbf24,
+        0 0 40px #92400e,
+        0 0 80px rgba(251, 191, 36, 0.4);
+    top: -5px; left: 50%; transform: translateX(-50%);
+    /* animation removed */
+}
+.hr-ring-1::after { top: auto; bottom: -4.5px; }
+.hr-ring-2 {
+    width: 320px; height: 320px;
+    border-width: 0.5px;
+    border-color: rgba(251, 191, 36, 0.12);
+    border-style: dashed;
+    /* animation removed */
+}
+.hr-ring-3 {
+    width: 260px; height: 260px;
+    border-width: 0.5px;
+    border-color: rgba(251, 191, 36, 0.08);
+    /* animation removed */
+}
+@keyframes hrSpinCW  { to { transform: translate(-50%,-50%) rotate(360deg); } }
+@keyframes hrSpinCCW { to { transform: translate(-50%,-50%) rotate(-360deg); } }
+
+/* Stage — main content container */
+.hr-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    /* hrRise animation removed — was causing entry glitch */
+    opacity: 1;
+}
+
+/* Hexagon crest */
+.hr-crest {
+    position: relative;
+    width: 230px; height: 230px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 40px;
+    transform: translateY(35px); /* Maximum orbital centering */
+}
+.hr-hex-svg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    transform: translateY(10px);
+    /* Static glow — animation removed */
+    filter: drop-shadow(0 0 22px rgba(251,191,36,0.45)) drop-shadow(0 0 4px rgba(255,243,196,0.3));
+}
+
+/* HR lettermark */
+.hr-letters {
+    position: relative;
+    font-family: 'Cinzel', serif;
+    font-size: 92px;
+    font-weight: 900;
+    letter-spacing: -3px;
+    line-height: 1;
+    z-index: 2;
+    transform: translateY(10px);
+    background: linear-gradient(158deg,
+        #fff3c4 0%, 
+        #fbbf24 25%, 
+        #92400e 50%, 
+        #fbbf24 75%, 
+        #fff3c4 100%
+    );
+    background-size: 300% 300%;
+    background-position: 30% 30%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* goldenFlow animation removed — was causing continuous GPU repaint */
+    filter:
+        drop-shadow(0 1px 0 #fef3c7)
+        drop-shadow(0 2px 0 #fbbf24)
+        drop-shadow(0 3px 0 #fbbf24)
+        drop-shadow(0 4px 0 #92400e)
+        drop-shadow(0 5px 0 #92400e)
+        drop-shadow(0 6px 0 #78350f)
+        drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+}
+@keyframes hrPurpleFlow {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* Divider */
+.hr-divider {
+    display: flex; align-items: center; gap: 14px;
+    width: 320px;
+    margin-bottom: 22px;
+    transform: translateY(35px); /* Significant drop for breathing room */
+}
+.hr-div-line {
+    flex: 1; height: 0.5px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.65));
+}
+.hr-div-line-r {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.65), transparent);
+}
+.hr-div-gem {
+    width: 8px; height: 8px;
+    background: #fbbf24;
+    transform: rotate(45deg);
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.95), 0 0 28px rgba(146, 64, 14, 0.6);
+    /* hrGemPulse animation removed */
+}
+
+/* Name & subtitle */
+.hr-name {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.58em;
+    text-transform: uppercase;
+    color: rgba(251, 191, 36, 0.9);
+    margin-bottom: 12px;
+    transform: translateX(-8px); /* Shift entire name to the left */
+}
+.hr-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.32em;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+}
+
+/* Corner accent marks */
+.hr-corner {
+    position: absolute;
+    width: 46px; height: 46px;
+    opacity: 0.38;
+}
+.hr-tl { top: 36px;    left: 36px;    border-top: 1px solid #fbbf24; border-left:   1px solid #fbbf24; }
+.hr-tr { top: 36px;    right: 36px;   border-top: 1px solid #fbbf24; border-right:  1px solid #fbbf24; }
+.hr-bl { bottom: 36px; left: 36px;    border-bottom: 1px solid #fbbf24; border-left: 1px solid #fbbf24; }
+.hr-br { bottom: 36px; right: 36px;   border-bottom: 1px solid #fbbf24; border-right:1px solid #fbbf24; }
+
+/* Bottom label */
+.hr-label {
+    position: absolute;
+    bottom: 28px; right: 50px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: rgba(251, 191, 36, 0.22);
+    text-transform: uppercase;
+}
+
+/* === COMPREHENSIVE RESPONSIVE ENGINE (Main Site) === */
+
+@media (max-width: 1024px) {
+    :root {
+        --px-pad: 4% 5%;
+    }
+    .hero-title { font-size: 52px; }
+    .hero-content { max-width: 80%; }
+}
+
+@media (max-width: 768px) {
+    .navbar { padding: 12px 5%; }
+    .nav-links { display: none; } /* Hide links for a cleaner mobile look, or could use a drawer */
+    .search-box { width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 50%; overflow: hidden; cursor: pointer; }
+    .search-box:focus-within { width: 220px; border-radius: 50px; padding: 0 15px; }
+    .search-box input { width: 0; opacity: 0; pointer-events: none; }
+    .search-box:focus-within input { width: 150px; opacity: 1; pointer-events: auto; }
+    .search-box i { margin-right: 0; font-size: 20px; }
+    .search-box:focus-within i { margin-right: 10px; }
+    
+    .hero-section { height: 80vh; padding-bottom: 80px; }
+    .hero-title { font-size: 38px; letter-spacing: -1px; }
+    .hero-overview { font-size: 14px; margin-bottom: 25px; -webkit-line-clamp: 2; line-clamp: 2; }
+    .hero-actions { flex-direction: column; gap: 12px; }
+    .hero-actions .btn { width: 100%; }
+
+    .rows-container { margin-top: -40px; }
+    .row { margin-bottom: 30px; padding-left: 5%; }
+    .row-header { font-size: 18px; }
+    .slider { gap: 10px; padding-bottom: 10px; }
+    .movie-card { min-width: 140px; max-width: 140px; }
+    .movie-card img { height: 210px; }
+    .row.original .movie-card { min-width: 260px; max-width: 260px; }
+    .row.original .movie-card img { height: 145px; }
+
+    .modal-content { width: 95%; max-height: 95vh; }
+    .modal-hero { height: 240px; }
+    .modal-body { padding: 0 20px 30px; margin-top: -40px; }
+    .modal-actions { gap: 10px; }
+    .modal-actions .btn { flex: 1; padding: 12px; font-size: 14px; }
+    .modal-info-grid { grid-template-columns: 1fr; gap: 20px; }
+    
+    .adguard-modal { padding: 30px 20px; }
+    .device-tabs { flex-wrap: wrap; }
+    .device-tab { flex: 1; font-size: 12px; padding: 10px; }
+}
+
+@media (max-width: 480px) {
+    .hero-title { font-size: 32px; }
+    .hero-meta { font-size: 13px; gap: 10px; }
+    .movie-card { min-width: 125px; max-width: 125px; }
+    .movie-card img { height: 185px; }
+    .card-overlay h4 { font-size: 12px; }
+    .modal-header h2 { font-size: 24px; }
+    .premium-select { padding: 0 20px 0 10px; font-size: 13px; height: 38px; }
+}
+
+/* === PERFORMANCE & EFFICIENCY TUNING === */
+/* CRITICAL FIX: Removed .movie-card from will-change list. Persistent
+   will-change on hundreds of cards burns mobile GPU memory and creates
+   compositor layer traps that freeze touch events. Cards now only get
+   will-change during :hover (desktop) — see .movie-card:hover above. */
+.btn, .hero-content, .modal-content {
+    will-change: transform, opacity;
+}
+
+/* CRITICAL FIX: content-visibility:auto on .row was causing layout thrash
+   on mobile during fast scroll — rows would un-render and re-render mid-swipe,
+   making the slider "jump" and feel stuck. Removed entirely on mobile. */
+@media (hover: hover) and (min-width: 769px) {
+    .row {
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 350px;
+    }
+}
+
+/* Optimize background transitions — SCOPED TO .hero-backdrop ONLY.
+
+   Bug 5 fix: an earlier version of this rule used the selector
+   `.hero-backdrop, .modal-hero-bg` which silently overrode the
+   intentional 14-second Ken Burns slow-zoom defined further up the file
+   for `.modal-hero-bg` (`transition: transform 14s ...`).
+
+   Because CSS resolves later rules with equal specificity as the winner,
+   the 0.8s `transform` transition was being applied to the modal hero
+   image — collapsing the cinematic 14s zoom into a near-instant 0.8s
+   pop. The modal-hero-bg MUST keep its dedicated 14s transform transition.
+
+   This rule is now explicitly scoped to `.hero-backdrop` only. Do NOT
+   add `.modal-hero-bg` to this selector. */
+.hero-backdrop {
+    transition: opacity 0.8s ease-in-out, transform 0.8s ease-out;
+}
+
+/* Glassmorphism Optimization — only outermost elements get backdrop-filter */
+.navbar.scrolled, .modal-content {
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+}
+
+/* === HR modal responsive === */
+@media (max-width: 768px) {
+    .hr-rings { width: 300px; height: 300px; }
+    .hr-ring-1 { width: 285px; height: 285px; }
+    .hr-ring-2 { width: 230px; height: 230px; }
+    .hr-ring-3 { width: 190px; height: 190px; }
+    .hr-letters { font-size: 70px; }
+    .hr-crest { width: 170px; height: 170px; margin-bottom: 28px; }
+    .hr-divider { width: 240px; }
+    .hr-name { font-size: 12px; letter-spacing: 0.42em; }
+    .hr-modal-close { top: 18px; right: 20px; }
+    .hr-corner { width: 32px; height: 32px; }
+    .hr-tl, .hr-tr { top: 18px; }
+    .hr-bl, .hr-br { bottom: 18px; }
+    .hr-tl, .hr-bl { left: 18px; }
+    .hr-tr, .hr-br { right: 18px; }
+}
+
+@media (max-width: 480px) {
+    .hr-rings { width: 260px; height: 260px; }
+    .hr-ring-1 { width: 245px; height: 245px; }
+    .hr-ring-2 { width: 190px; height: 190px; }
+    .hr-ring-3 { width: 150px; height: 150px; }
+    .hr-letters { font-size: 56px; }
+    .hr-crest { width: 140px; height: 140px; }
+    .hr-divider { width: 200px; }
+    .hr-label { display: none; }
+}
+
+.hr-logo-container {
+    width: 36px; height: 36px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: 10px; cursor: pointer; transition: all 0.3s ease;
+    /* No auto-play animation — uses .hr-logo-anim on click */
+}
+.hr-logo-container:hover {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: var(--aura-primary);
+    box-shadow: 0 0 15px var(--aura-glow);
+}
+.hr-logo-text {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 14px;
+    background: var(--aura-gradient); background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: goldenFlow 5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.4));
+}
+
+/* === MASTER LOADER === */
+.master-loader {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-base);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1), visibility 0.8s;
+}
+
+body:not(.loading-active) .master-loader {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    text-align: center;
+    width: 280px;
+}
+
+.loader-logo {
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 25px;
+    letter-spacing: -1px;
+}
+
+.loader-logo span {
+    background: var(--aura-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.loader-bar-container {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loader-bar {
+    width: 40%;
+    height: 100%;
+    background: var(--aura-gradient);
+    border-radius: 2px;
+    position: absolute;
+    left: -40%;
+    animation: loaderShift 1.5s infinite ease-in-out;
+}
+
+@keyframes loaderShift {
+    0% { left: -40%; width: 30%; }
+    50% { width: 60%; }
+    100% { left: 100%; width: 30%; }
+}
+
+/* === ACCESSIBILITY: REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ============================================================
+   RECOMMENDATIONS — inside modal
+   ============================================================ */
+.recommended-section {
+    margin-top: 28px;
+}
+
+.recommended-section .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--aura-primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.recommended-section .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--aura-gradient);
+    border-radius: 2px;
+}
+
+/* Horizontal scrolling row of recommendation cards */
+#recommendedContainer {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* Snap removed — same reason as main slider: stuck-feel on iOS momentum */
+    scroll-snap-type: none;
+    -webkit-overflow-scrolling: touch;
+    /* Allow both axes — dominant direction wins. pan-x alone was rejecting
+       slightly-angled real-world swipes and freezing the rec scroll. */
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    -webkit-user-select: none;
+    user-select: none;
+    transform: translateZ(0);
+}
+#recommendedContainer::-webkit-scrollbar { display: none; }
+
+.rec-card {
+    flex: 0 0 120px;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    /* scroll-snap-align removed — was contributing to stuck-swipe feel */
+    position: relative;
+    touch-action: manipulation;
+}
+.rec-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.55), 0 0 12px rgba(251,191,36,0.12);
+    border-color: rgba(251,191,36,0.25);
+}
+.rec-card:active {
+    transform: scale(0.96);
+}
+.rec-poster {
+    position: relative;
+    width: 100%;
+    height: 170px;
+    overflow: hidden;
+}
+.rec-poster img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+.rec-card:hover .rec-poster img {
+    transform: scale(1.06);
+}
+.rec-play-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.45);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    font-size: 30px;
+    color: rgba(255,255,255,0.9);
+}
+.rec-card:hover .rec-play-icon { opacity: 1; }
+
+.rec-info {
+    padding: 8px 9px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.rec-title {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+.rec-meta {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* Mobile: slightly smaller rec cards */
+@media (max-width: 480px) {
+    .rec-card { flex: 0 0 100px; }
+    .rec-poster { height: 142px; }
+    .rec-title  { font-size: 10.5px; }
+}
+
+/* ============================================================
+   iOS SAFARI + INSTAGRAM IN-APP BROWSER PERFORMANCE FIXES
+   ============================================================ */
+
+/* Prevent ghost tap highlight on all interactive elements */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Iframe player: proper 16:9 aspect ratio lock for ALL screen sizes */
+.video-modal-content,
+.player-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+.video-modal-content iframe,
+.player-wrapper iframe,
+#youtubePlayer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    border: none;
+}
+
+/* Slider container: NO isolation — `isolation: isolate` creates a new
+   stacking context that on Android Chrome can trap touch events inside
+   it after a modal close. Letting it inherit from .row is correct. */
+.slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Slider wrapper: NO overflow:hidden!
+   That property was destroying the horizontal scroll context on the
+   inner .slider after the iframe modal closed on iOS. */
+.slider-wrapper {
+    position: relative;
+    /* CRITICAL FIX: touch-action `auto` (default) — let the inner .slider
+       declare its own touch behavior. Earlier `pan-y` here was *blocking*
+       horizontal pans from reaching the slider on some Android devices. */
+    touch-action: auto;
+}
+
+/* REMOVED: transform/backface-visibility on #rowsContainer.
+   That was creating a permanent GPU layer that froze child sliders
+   after the iframe modal stole and returned the touch context on iOS. */
+
+/* === iOS BODY-LOCK CLASS (driven by JS) === */
+/* When a modal is open, JS adds .body-locked to <html>. Position:fixed +
+   width:100% is the only reliable way to stop iOS Safari background
+   scroll without breaking the touch context on return. */
+html.body-locked,
+html.body-locked body {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
+html.body-locked body {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+
+/* Video modal: lock its own touch behavior so the iframe doesn't
+   leak gesture state back into the underlying sliders on close. */
+.video-modal-backdrop {
+    touch-action: none;
+    overscroll-behavior: contain;
+}
+.video-modal-backdrop iframe {
+    touch-action: auto;
+}
+
+/* Hero title: responsive clamp so it never overflows on any screen */
+#heroTitle {
+    font-size: clamp(1.6rem, 5vw, 3.8rem) !important;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE (< 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    .nav-links { gap: 10px; }
+    .nav-links a { font-size: 12px; padding: 4px 6px; }
+
+    .movie-card { min-width: 150px; max-width: 150px; }
+    .movie-card img { height: 225px; }
+
+    .row.original .movie-card { min-width: 240px; max-width: 240px; }
+    .row.original .movie-card img { height: 140px; }
+
+    .slider { gap: 10px; }
+
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 95vh !important;
+        border-radius: 16px 16px 0 0 !important;
+        margin-top: auto;
+    }
+
+    .tab-buttons, .dns-tabs { flex-wrap: wrap !important; gap: 6px !important; }
+    .tab-btn, .dns-tab { min-width: 90px !important; font-size: 12px !important; }
+}
+
+/* ============================================================
+   INSTAGRAM / WEBVIEW SAFE AREA
+   ============================================================ */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .navbar {
+        padding-top: max(16px, env(safe-area-inset-top));
+    }
+}
+
+/* ============================================================
+   BUG 5 — DEFINITIVE KEN BURNS RE-ASSERTION
+   ============================================================
+   This block is intentionally placed at the very end of the file as a
+   "last word wins" guarantee for the modal hero's 14-second slow-zoom.
+   If anyone accidentally re-introduces a selector like
+   `.hero-backdrop, .modal-hero-bg { transition: ... 0.8s ... }`
+   this final rule will still win (assuming equal specificity) because
+   CSS cascade resolves later identical-specificity rules as the winner.
+   DO NOT add new `.modal-hero-bg` transitions below this block. */
+.modal-hero-bg {
+    transition: transform 14s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    transform-origin: center 30%;
+}
+.modal-backdrop.active .modal-hero-bg {
+    transform: scale(1.08);
+}
