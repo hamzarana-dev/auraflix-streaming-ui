@@ -3,7 +3,7 @@
 **Auraflix** is a premium, Netflix-inspired streaming platform interface built with pure HTML, CSS, and Vanilla JavaScript. This project focuses on high-fidelity UI/UX design, smooth animations, and real-time data integration using the **TMDB (The Movie Database) API** to replicate the immersive experience of a world-class video streaming service.
 
 ## 🌐 Live Demo
-*[Insert your Vercel live demo link here once deployed, otherwise remove this line]*
+auraflixx.vercel.app
 
 ## ✨ Key Features
 
